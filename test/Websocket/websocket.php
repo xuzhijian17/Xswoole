@@ -13,7 +13,7 @@ $ws->on('open', function ($ws, $request) {
 	
 	// 欢迎语
 	$GLOBALS['data']['code'] = 1;
-	$GLOBALS['data']['msg'] = "hello, welcome! fd:{$request->fd}\n";
+	$GLOBALS['data']['msg'] = "hello, welcome! 游客{$request->fd}\n";
     $ws->push($request->fd, json_encode($GLOBALS['data']));
 });
 
@@ -38,7 +38,7 @@ $ws->on('message', function ($ws, $frame) {
 		}
 	}
 	
-	if($code == 0){
+	if($data['code'] == 0){
 		$data['data']['status'] = 1;
 	}elseif($code == -1){
 		$data['data'] = $err_list;
