@@ -40,7 +40,7 @@ $ws->on('message', function ($ws, $frame) {
 	
 	if($data['code'] == 0){
 		$data['data']['status'] = 1;
-	}elseif($code == -1){
+	}elseif($data['code'] == -1){
 		$data['data'] = $err_list;
 	}
 	
