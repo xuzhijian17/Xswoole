@@ -1,0 +1,47 @@
+<!-- websocket游客端 -->
+<input type="text" value="" id="msg">
+<input type="button" value="submit" id="btn">
+
+<ul id="chat"></ul>
+<script>
+var wsServer = 'ws://127.0.0.1:9502';
+var websocket = new WebSocket(wsServer);
+websocket.onopen = function (evt) {
+    console.log("Connected to WebSocket server.");
+};
+
+websocket.onclose = function (evt) {
+    console.log("Disconnected");
+};
+
+websocket.onmessage = function (evt) {
+	var rs = JSON.parse(evt.data);
+	console.log(rs);
+	
+	var text;
+	if (rs.code == 0){
+		text = rs.data.name+': '+rs.data.data;
+		if(rs.data.status == 0){
+			text += ' 发送失败';
+		}
+	}else if(rs.code == 1){
+		text = rs.msg;
+	}
+	
+	var node = document.createElement("li");                 // Create a <li> node
+	var textnode = document.createTextNode(text);         // Create a text node
+	node.appendChild(textnode);                              // Append the text to <li>
+	document.getElementById("chat").appendChild(node);     // Append <li> to <ul> with id="chat"
+	
+	
+	// 事件触发
+	document.getElementById('btn').onclick = function(){
+		var msg = document.getElementById('msg').value;
+		websocket.send(msg);
+	}
+};
+
+websocket.onerror = function (evt, e) {
+    console.log('Error occured: ' + evt.data);
+};
+</script>
