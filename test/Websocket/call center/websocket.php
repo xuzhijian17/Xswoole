@@ -37,7 +37,7 @@ $ws->on('message', function ($ws, $frame) use($redis) {
 	
 	$data = $GLOBALS['data'];
 	
-	
+	// 默认返回数据
 	$data['code'] = 0;
 	$name = $uid ? '会员'.$frame->fd : '游客'.$frame->fd;
 	$data['data'] = ['fd'=>$frame->fd, 'name'=>$name, 'data'=>$frame->data, 'status'=>0];
@@ -63,7 +63,7 @@ $ws->on('message', function ($ws, $frame) use($redis) {
 				$data['msg'] = 'error push!';
 			}
 			$ws->push($frame->fd, json_encode($data));	// push数据给自己（这里主要是为了返回发送状态）
-			break;
+			break;	// 一对一聊天，这里无需再往后执行
 		}
 	}
 });

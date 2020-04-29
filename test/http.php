@@ -12,19 +12,22 @@ $http->on('request', function ($request, $response) use ($http) {
     }
 	$response->header("Content-Type", "text/html; charset=utf-8");
 	list($controller, $action) = explode('/', trim($request->server['request_uri'], '/'));
-	$path = __DIR__.'/Controllers/'.$controller.'.php';
-	include_once($path);
-    //根据 $controller, $action 映射到不同的控制器类和方法
-    (new $controller)->$action($request, $response);
-    //var_dump($controller, $action);
-	
-	if($action == 'task'){
+	$file_path = __DIR__.'/Controllers/'.$controller.'.php';
+	if(file_exists($file_path)){
+		require_once($path);
+		//根据 $controller, $action 映射到不同的控制器类和方法
+		(new $controller)->$action($request, $response);
+		
 		//投递异步任务
-		$data = $request->getData();
-		$task_id = $http->task($data);
-		echo "Dispatch AsyncTask: id=$task_id\n";
+		if($action == 'task'){
+			$data = $request->getData();
+			$task_id = $http->task($data);
+			echo "Dispatch AsyncTask: id=$task_id\n";
+		}
+	}else{
+		$response->header("Status Code", 404);
+		echo 404;
 	}
-    
 });
 
 $http->on('task', function ($serv, $task_id, $from_id, $data) {
