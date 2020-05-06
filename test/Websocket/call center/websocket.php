@@ -20,7 +20,7 @@ $ws->on('open', function ($ws, $request) use($redis) {
 	1.游客进入聊天界面，直接分配在线的客服（游客主动匹配客服）
 	2.游客进入后，不直接分配，进入等待区。由客服自己选择和谁聊天（客服主动匹配游客）
 	*/
-	$redis->sadd('fd_'.$request->fd, $request->fd);	// 先创建临时会话标识
+	$redis->sadd('fd_'.$request->fd, $request->fd);	// 先创建临时会话标识，后通过click_chat.php创建一对一会话fd集合
 	
 	// 欢迎语
 	$GLOBALS['data']['code'] = 1;
@@ -44,7 +44,7 @@ $ws->on('message', function ($ws, $frame) use($redis) {
 	$data['msg'] = '';
 	
 	// 临时会话中的fd集合，临时会话集合中只能保存2个fd，即一对一聊天
-	$chat_fd = $redis->smembers('fd_'.$frame->fd);	// 这里可采用客户端push数据（$frame->data）的时候，把会话标识fd带上（可通过click_chat.php接口返回），方便识别
+	$chat_fd = $redis->smembers('fd_'.$frame->fd);	// 这里可通过前端在选择一对一聊天时，调用click_chat.php接口，生成一对一会话fd集合
 	if(empty($chat_fd)){
 		echo "redis fd is empty"; 
 	}
